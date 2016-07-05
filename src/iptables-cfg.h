@@ -1,6 +1,7 @@
 #ifndef _IPTABLES_CFG_H
 #define _IPTABLES_CFG_H 1
 
+#include <ctype.h>
 #include <ncurses.h>
 
 #define KEY_ENTER_ASCII 10 /* ASCII Enter keycode. */
@@ -34,9 +35,20 @@ typedef enum { IPV4 = 4, IPV6 = 6 } ipvx_t;
 typedef enum { TCP, UDP } ipvx_protocol_t;
 const char* IPVX_PROTOCOLS[] = { "tcp", "udp" };
 
+static inline char* strupper(const char* str)
+{
+	int length = strlen(str);
+	char* new_str = malloc(length * sizeof(char));
+	for (int i = 0; i < length; i++)
+	{
+		new_str[i] = toupper(str[i]);
+	}
+	return new_str;
+}
+
 WINDOW* new_dialog(int height, int width, char* text);
 void del_dialog(WINDOW* win);
 void append_ipvx_rule(FILE* config, long port, ipvx_protocol_t protocol);
-ipvx_ports_t req_ipvx_ports(ipvx_t version);
+ipvx_ports_t req_ipvx_ports(ipvx_t version, ipvx_protocol_t protocol);
 
 #endif

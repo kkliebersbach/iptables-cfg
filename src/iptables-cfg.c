@@ -16,7 +16,7 @@ int main()
 
 	FILE* ipv4_config = fopen("/tmp/iptables.conf", "w+");
 	/* Request TCP ports to open. */
-	ipvx_ports_t ipv4_ports = req_ipvx_ports(IPV4);
+	ipvx_ports_t ipv4_ports = req_ipvx_ports(IPV4, TCP);
 	/* Construct configuration file. */
 	fprintf(ipv4_config, IPVX_CONF_START);
 	for (int i = 0; i < ipv4_ports.count; i++)
@@ -27,7 +27,7 @@ int main()
 	fclose(ipv4_config);
 
 	FILE* ipv6_config = fopen("/tmp/ip6tables.conf", "w+");
-	ipvx_ports_t ipv6_ports = req_ipvx_ports(IPV6);
+	ipvx_ports_t ipv6_ports = req_ipvx_ports(IPV6, TCP);
 	fprintf(ipv6_config, IPVX_CONF_START);
 	for (int i = 0; i < ipv6_ports.count; i++)
 	{
@@ -66,10 +66,11 @@ void append_ipvx_rule(FILE* config, long port, ipvx_protocol_t protocol)
 	fprintf(config, IPVX_CONF_RULE, protocol_str, protocol_str, port);
 }
 
-ipvx_ports_t req_ipvx_ports(ipvx_t version)
+ipvx_ports_t req_ipvx_ports(ipvx_t version, ipvx_protocol_t protocol)
 {
-	char text[48];
-	sprintf(text, "Enter the ports to open over the IPv%d protocol:", version);
+	char text[52];
+	sprintf(text, "Enter the %s ports to open over the IPv%d protocol:", \
+			strupper(IPVX_PROTOCOLS[protocol]), version);
 	int height = 8, width = 56;
 	WINDOW* dialog_win = new_dialog(height, width, text);
 	WINDOW* form_win = newwin(height / 2 - 1, width - 2, \
