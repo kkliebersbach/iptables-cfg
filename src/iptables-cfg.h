@@ -30,12 +30,13 @@ typedef struct
 }
 ipvx_ports_t;
 
+typedef enum { IPV4 = 4, IPV6 = 6 } ipvx_t;
 typedef enum { TCP, UDP } ipvx_protocol_t;
 const char* IPVX_PROTOCOLS[] = { "tcp", "udp" };
 
 WINDOW* new_dialog(int height, int width, char* text);
 void del_dialog(WINDOW* win);
 void append_ipvx_rule(FILE* config, long port, ipvx_protocol_t protocol);
-ipvx_ports_t req_ipvx_ports(int version);
+ipvx_ports_t req_ipvx_ports(ipvx_t version);
 
 #endif
