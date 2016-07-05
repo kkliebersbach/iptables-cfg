@@ -57,6 +57,7 @@ ipvx_ports req_ipvx_ports(int version)
 	field_opts_off(field[0], O_AUTOSKIP);
 	field_opts_off(field[0], O_STATIC); /* Make field length dynamic. */
 	set_max_field(field[0], 1024);
+	set_field_buffer(field[0], 0, PORTS_DEFAULT);
 
 	FORM* form = new_form(field);
 	int form_row, form_col;
