@@ -3,7 +3,7 @@
 
 #include <ncurses.h>
 
-#define KEY_ENTER_ASCII 10
+#define KEY_ENTER_ASCII 10 /* ASCII Enter keycode. */
 #define PORTS_TOK " "
 
 typedef struct
