@@ -3,16 +3,18 @@
 
 #include <ncurses.h>
 
-#define EXEC_NAME "iptables-cfg"
-#define EXEC_VER "0.0.1"
+#define KEY_ENTER_ASCII 10
+#define PORTS_TOK " "
 
 typedef struct
 {
-	WINDOW* win;
-	FIELD* field;
-} DIALOG;
+	int count;
+	long* ports;
+}
+ipvx_ports;
 
-DIALOG* newdlg(int height, int width, char* msg);
-void deldlg(DIALOG* dlg);
+WINDOW* new_dialog(int height, int width, char* text);
+void del_dialog(WINDOW* win);
+ipvx_ports req_ipvx_ports(int version);
 
 #endif

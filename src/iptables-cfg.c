@@ -5,41 +5,105 @@
 
 #include "iptables-cfg.h"
 
-int row, col, ctr_row, ctr_col;
+int row, col;
 
 int main()
 {
 	initscr();
 	cbreak();
+	noecho();
 	getmaxyx(stdscr, row, col);
-	ctr_row = row / 2;
-	ctr_col = col / 2;
 
-	DIALOG* dlg = newdlg(8, 32, EXEC_NAME);
-	wgetch(dlg->win);
-	deldlg(dlg);
+	ipvx_ports ipv4_ports = req_ipvx_ports(4);
+	ipvx_ports ipv6_ports = req_ipvx_ports(6);
 
 	endwin();
 	return 0;
 }
 
-DIALOG* newdlg(int height, int width, char* msg)
+WINDOW* new_dialog(int height, int width, char* text)
 {
-	int d_ctr_row = height / 2, d_ctr_col = width / 2;
-	DIALOG* dlg = malloc(sizeof(DIALOG));
-	dlg->win = newwin(height, width, row / 2 - d_ctr_row, col / 2 - d_ctr_col);
+	WINDOW* win = newwin(height, width, row / 2 - height / 2, col / 2 - width / 2);
 
-	box(dlg->win, 0, 0);
-	mvwprintw(dlg->win, d_ctr_row - 1, d_ctr_col - strlen(msg) / 2, msg);
-	wmove(dlg->win, d_ctr_row, 0);
-	wrefresh(dlg->win);
+	box(win, 0, 0);
+	mvwprintw(win, height / 2 - 1, width / 2 - strlen(text) / 2, text);
+	wrefresh(win);
 
-	return dlg;
+	return win;
 }
 
-void deldlg(DIALOG* dlg)
+void del_dialog(WINDOW* win)
 {
-	wborder(dlg->win, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
-	wrefresh(dlg->win);
-	delwin(dlg->win);
+	wborder(win, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+	wrefresh(win);
+	delwin(win);
+}
+
+ipvx_ports req_ipvx_ports(int version)
+{
+	char text[48];
+	sprintf(text, "Enter the ports to open over the IPv%d protocol:", version);
+	int height = 8, width = 56;
+	WINDOW* dialog_win = new_dialog(height, width, text);
+	WINDOW* form_win = newwin(height / 2 - 1, width - 2, row / 2, col / 2 - width / 2 + 1);
+	keypad(form_win, TRUE);
+
+	FIELD* field[2] = { new_field(1, width - 2, 0, 0, 0, 0), NULL };
+	set_field_back(field[0], A_UNDERLINE);
+	field_opts_off(field[0], O_AUTOSKIP);
+	field_opts_off(field[0], O_STATIC);
+	set_max_field(field[0], 1024);
+
+	FORM* form = new_form(field);
+	int form_row, form_col;
+	scale_form(form, &form_row, &form_col);
+	set_form_win(form, form_win);
+	set_form_sub(form, derwin(form_win, form_row, form_col, 2, 2));
+
+	post_form(form);
+	wrefresh(form_win);
+
+	int ch;
+	while((ch = wgetch(form_win)) != KEY_ENTER_ASCII)
+	{
+		switch(ch)
+		{
+		case KEY_BACKSPACE:
+			form_driver(form, REQ_DEL_PREV);
+			break;
+		case KEY_LEFT:
+			form_driver(form, REQ_PREV_CHAR);
+			break;
+		case KEY_RIGHT:
+			form_driver(form, REQ_NEXT_CHAR);
+			break;
+		default:
+			form_driver(form, ch);
+			break;
+		}
+		wrefresh(form_win);
+	}
+	form_driver(form, REQ_NEXT_FIELD);
+
+	ipvx_ports ports = { 0, malloc(sizeof(long)) };
+	int field_len;
+	dynamic_field_info(field[0], NULL, &field_len, NULL);
+	char* ports_str = malloc(field_len * sizeof(char));
+	strcpy(ports_str, field_buffer(field[0], 0));
+	char* token = strtok(ports_str, PORTS_TOK);
+	while(token != NULL)
+	{
+		ports.ports[ports.count++] = strtol(token, NULL, 10);
+		ports.ports = realloc(ports.ports, (ports.count + 1) * sizeof(long));
+		token = strtok(NULL, PORTS_TOK);
+	}
+	free(ports_str);
+
+	unpost_form(form);
+	free_form(form);
+	free_field(field[0]);
+	delwin(form_win);
+	del_dialog(dialog_win);
+
+	return ports;
 }
