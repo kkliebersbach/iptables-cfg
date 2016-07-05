@@ -8,6 +8,7 @@
 #define PORTS_DEFAULT "22 25 80 443"
 #define PORTS_TOK " "
 
+#define IPVX_CONF_RULE "-A INPUT -p %s -m %s --dport %ld -j ACCEPT\n"
 #define IPVX_CONF_START \
 "*filter\n\
 :INPUT DROP [0:0]\n\
@@ -27,10 +28,14 @@ typedef struct
 	int count;
 	long* ports;
 }
-ipvx_ports;
+ipvx_ports_t;
+
+typedef enum { TCP, UDP } ipvx_protocol_t;
+const char* IPVX_PROTOCOLS[] = { "tcp", "udp" };
 
 WINDOW* new_dialog(int height, int width, char* text);
 void del_dialog(WINDOW* win);
-ipvx_ports req_ipvx_ports(int version);
+void append_ipvx_rule(FILE* config, long port, ipvx_protocol_t protocol);
+ipvx_ports_t req_ipvx_ports(int version);
 
 #endif

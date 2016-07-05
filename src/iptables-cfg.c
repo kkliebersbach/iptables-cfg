@@ -14,8 +14,25 @@ int main()
 	noecho(); /* Stop echoing characters to the screen. */
 	getmaxyx(stdscr, row, col);
 
-	ipvx_ports ipv4_ports = req_ipvx_ports(4);
-	ipvx_ports ipv6_ports = req_ipvx_ports(6);
+	FILE* ipv4_config = fopen("/tmp/iptables.conf", "w+");
+	ipvx_ports_t ipv4_ports = req_ipvx_ports(4);
+	fprintf(ipv4_config, IPVX_CONF_START);
+	for (int i = 0; i < ipv4_ports.count; i++)
+	{
+		append_ipvx_rule(ipv4_config, ipv4_ports.ports[i], TCP);
+	}
+	fprintf(ipv4_config, IPV4_CONF_END);
+	fclose(ipv4_config);
+
+	FILE* ipv6_config = fopen("/tmp/ip6tables.conf", "w+");
+	ipvx_ports_t ipv6_ports = req_ipvx_ports(6);
+	fprintf(ipv6_config, IPVX_CONF_START);
+	for (int i = 0; i < ipv6_ports.count; i++)
+	{
+		append_ipvx_rule(ipv6_config, ipv6_ports.ports[i], TCP);
+	}
+	fprintf(ipv6_config, IPV6_CONF_END);
+	fclose(ipv6_config);
 
 	endwin();
 	return 0;
@@ -41,7 +58,13 @@ void del_dialog(WINDOW* win)
 	delwin(win);
 }
 
-ipvx_ports req_ipvx_ports(int version)
+void append_ipvx_rule(FILE* config, long port, ipvx_protocol_t protocol)
+{
+	const char* protocol_str = IPVX_PROTOCOLS[protocol];
+	fprintf(config, IPVX_CONF_RULE, protocol_str, protocol_str, port);
+}
+
+ipvx_ports_t req_ipvx_ports(int version)
 {
 	char text[48];
 	sprintf(text, "Enter the ports to open over the IPv%d protocol:", version);
@@ -96,7 +119,7 @@ ipvx_ports req_ipvx_ports(int version)
 	form_driver(form, REQ_NEXT_FIELD);
 
 	/* Create structure to return values in and allocate the ports array. */
-	ipvx_ports ports = { 0, malloc(sizeof(long)) };
+	ipvx_ports_t ports = { 0, malloc(sizeof(long)) };
 	/* Get field length so suitable memory can be allocated to store it. */
 	int field_len;
 	dynamic_field_info(field[0], NULL, &field_len, NULL);
