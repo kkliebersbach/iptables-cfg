@@ -15,23 +15,33 @@ int main()
 	getmaxyx(stdscr, row, col);
 
 	FILE* ipv4_config = fopen("/tmp/iptables.conf", "w+");
-	/* Request TCP ports to open. */
-	ipvx_ports_t ipv4_ports = req_ipvx_ports(IPV4, TCP);
+	/* Request TCP and UDP ports to open. */
+	ipvx_ports_t ipv4_tcp_ports = req_ipvx_ports(IPV4, TCP);
+	ipvx_ports_t ipv4_udp_ports = req_ipvx_ports(IPV4, UDP);
 	/* Construct configuration file. */
 	fprintf(ipv4_config, IPVX_CONF_START);
-	for (int i = 0; i < ipv4_ports.count; i++)
+	for (int i = 0; i < ipv4_tcp_ports.count; i++)
 	{
-		append_ipvx_rule(ipv4_config, ipv4_ports.ports[i], TCP);
+		append_ipvx_rule(ipv4_config, ipv4_tcp_ports.ports[i], TCP);
+	}
+	for (int i = 0; i < ipv4_udp_ports.count; i++)
+	{
+		append_ipvx_rule(ipv4_config, ipv4_udp_ports.ports[i], UDP);
 	}
 	fprintf(ipv4_config, IPV4_CONF_END);
 	fclose(ipv4_config);
 
 	FILE* ipv6_config = fopen("/tmp/ip6tables.conf", "w+");
-	ipvx_ports_t ipv6_ports = req_ipvx_ports(IPV6, TCP);
+	ipvx_ports_t ipv6_tcp_ports = req_ipvx_ports(IPV6, TCP);
+	ipvx_ports_t ipv6_udp_ports = req_ipvx_ports(IPV6, UDP);
 	fprintf(ipv6_config, IPVX_CONF_START);
-	for (int i = 0; i < ipv6_ports.count; i++)
+	for (int i = 0; i < ipv6_tcp_ports.count; i++)
 	{
-		append_ipvx_rule(ipv6_config, ipv6_ports.ports[i], TCP);
+		append_ipvx_rule(ipv6_config, ipv6_tcp_ports.ports[i], TCP);
+	}
+	for (int i = 0; i < ipv6_udp_ports.count; i++)
+	{
+		append_ipvx_rule(ipv6_config, ipv6_udp_ports.ports[i], UDP);
 	}
 	fprintf(ipv6_config, IPV6_CONF_END);
 	fclose(ipv6_config);
@@ -83,7 +93,8 @@ ipvx_ports_t req_ipvx_ports(ipvx_t version, ipvx_protocol_t protocol)
 	field_opts_off(field[0], O_AUTOSKIP);
 	field_opts_off(field[0], O_STATIC); /* Make field length dynamic. */
 	set_max_field(field[0], 1024);
-	set_field_buffer(field[0], 0, PORTS_DEFAULT);
+	/* Set default TCP ports. */
+	if (protocol == TCP) set_field_buffer(field[0], 0, PORTS_DEFAULT_TCP);
 
 	FORM* form = new_form(field);
 	int form_row, form_col;

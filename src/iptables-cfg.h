@@ -6,7 +6,7 @@
 
 #define KEY_ENTER_ASCII 10 /* ASCII Enter keycode. */
 
-#define PORTS_DEFAULT "22 25 80 443"
+#define PORTS_DEFAULT_TCP "22 25 80 443"
 #define PORTS_TOK " "
 
 #define IPVX_CONF_RULE "-A INPUT -p %s -m %s --dport %ld -j ACCEPT\n"
