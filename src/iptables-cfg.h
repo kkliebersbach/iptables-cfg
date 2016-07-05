@@ -39,9 +39,10 @@ static inline char* strupper(const char* str)
 {
 	int length = strlen(str);
 	char* new_str = malloc(length * sizeof(char));
+	strcpy(new_str, str);
 	for (int i = 0; i < length; i++)
 	{
-		new_str[i] = toupper(str[i]);
+		new_str[i] = toupper(new_str[i]);
 	}
 	return new_str;
 }
