@@ -4,13 +4,13 @@ LDFLAGS=-lncurses
 
 ODIR=bin
 _BIN=iptables-cfg
-BIN=$(pathsubst %,$(ODIR)/%,$(_BIN))
+BIN=$(patsubst %,$(ODIR)/%,$(_BIN))
 _OBJ=$(_BIN).o
-OBJ=$(pathsubst %,$(ODIR)/%,$(_OBJ))
+OBJ=$(patsubst %,$(ODIR)/%,$(_OBJ))
 
 IDIR=src
 _DEPS=$(_BIN).h
-DEPS=$(pathsubst %,$(IDIR)/%,$(_DEPS))
+DEPS=$(patsubst %,$(IDIR)/%,$(_DEPS))
 
 .PHONY: build clean
 build: $(BIN)
