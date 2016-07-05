@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -std=gnu11
-LDFLAGS=-lncurses
+LDFLAGS=-lform -lncurses
 
 ODIR=bin
 _BIN=iptables-cfg
