@@ -14,7 +14,7 @@ int main()
 	noecho(); /* Stop echoing characters to the screen. */
 	getmaxyx(stdscr, row, col);
 
-	FILE* ipv4_config = fopen("/tmp/iptables.conf", "w+");
+	FILE* ipv4_config = fopen(IPV4_CONF, "w+");
 	/* Request TCP and UDP ports to open. */
 	ipvx_ports_t ipv4_tcp_ports = req_ipvx_ports(IPV4, TCP);
 	ipvx_ports_t ipv4_udp_ports = req_ipvx_ports(IPV4, UDP);
@@ -31,7 +31,7 @@ int main()
 	fprintf(ipv4_config, IPV4_CONF_END);
 	fclose(ipv4_config);
 
-	FILE* ipv6_config = fopen("/tmp/ip6tables.conf", "w+");
+	FILE* ipv6_config = fopen(IPV6_CONF, "w+");
 	ipvx_ports_t ipv6_tcp_ports = req_ipvx_ports(IPV6, TCP);
 	ipvx_ports_t ipv6_udp_ports = req_ipvx_ports(IPV6, UDP);
 	fprintf(ipv6_config, IPVX_CONF_START);
@@ -45,6 +45,13 @@ int main()
 	}
 	fprintf(ipv6_config, IPV6_CONF_END);
 	fclose(ipv6_config);
+
+	char iptables_restore[64];
+	sprintf(iptables_restore, IPV4_COM_RESTORE, IPV4_CONF);
+	system(iptables_restore);
+	char ip6tables_restore[64];
+	sprintf(ip6tables_restore, IPV6_COM_RESTORE, IPV6_CONF);
+	system(ip6tables_restore);
 
 	endwin();
 	return 0;

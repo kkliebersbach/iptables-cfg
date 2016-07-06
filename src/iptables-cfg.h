@@ -9,6 +9,8 @@
 #define PORTS_DEFAULT_TCP "22 25 80 443"
 #define PORTS_TOK " "
 
+#define IPV4_CONF "/tmp/iptables.conf"
+#define IPV6_CONF "/tmp/ip6tables.conf"
 #define IPVX_CONF_RULE "-A INPUT -p %s -m %s --dport %ld -j ACCEPT\n"
 #define IPVX_CONF_START \
 "*filter\n\
@@ -23,6 +25,9 @@ COMMIT\n"
 #define IPV6_CONF_END \
 "-A INPUT -p ipv6-icmp -j ACCEPT\n\
 COMMIT\n"
+
+#define IPV4_COM_RESTORE "sh -c \"iptables-restore << cat %s\""
+#define IPV6_COM_RESTORE "sh -c \"ip6tables-restore << cat %s\""
 
 typedef struct
 {
