@@ -82,8 +82,7 @@ WINDOW* new_dialog(int height, int width, char* text)
 
 void del_dialog(WINDOW* win)
 {
-	/* Reset the window border. */
-	wborder(win, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+	werase(win); /* Clear the window. */
 	wrefresh(win);
 	delwin(win);
 }
