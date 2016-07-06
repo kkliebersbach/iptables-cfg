@@ -55,6 +55,7 @@ static inline char* strupper(const char* str)
 WINDOW* new_dialog(int height, int width, char* text);
 void del_dialog(WINDOW* win);
 void append_ipvx_rule(FILE* config, long port, ipvx_protocol_t protocol);
+int req_confirm(char* text);
 ipvx_ports_t req_ipvx_ports(ipvx_t version, ipvx_protocol_t protocol);
 
 #endif

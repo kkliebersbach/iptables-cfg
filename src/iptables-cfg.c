@@ -46,12 +46,16 @@ int main()
 	fprintf(ipv6_config, IPV6_CONF_END);
 	fclose(ipv6_config);
 
-	char iptables_restore[64];
-	sprintf(iptables_restore, IPV4_COM_RESTORE, IPV4_CONF);
-	system(iptables_restore);
-	char ip6tables_restore[64];
-	sprintf(ip6tables_restore, IPV6_COM_RESTORE, IPV6_CONF);
-	system(ip6tables_restore);
+	if(req_confirm("Apply new rules?")) /* Show confirmation dialog. */
+	{
+		/* Execute iptables-restore to apply configuration files. */
+		char iptables_restore[64];
+		sprintf(iptables_restore, IPV4_COM_RESTORE, IPV4_CONF);
+		system(iptables_restore);
+		char ip6tables_restore[64];
+		sprintf(ip6tables_restore, IPV6_COM_RESTORE, IPV6_CONF);
+		system(ip6tables_restore);
+	}
 
 	endwin();
 	return 0;
@@ -81,6 +85,52 @@ void append_ipvx_rule(FILE* config, long port, ipvx_protocol_t protocol)
 {
 	const char* protocol_str = IPVX_PROTOCOLS[protocol];
 	fprintf(config, IPVX_CONF_RULE, protocol_str, protocol_str, port);
+}
+
+int req_confirm(char* text)
+{
+	int height = 8, width = 32;
+	WINDOW* dialog_win = new_dialog(height, width, text);
+	keypad(dialog_win, TRUE); /* Enable function keys. */
+	curs_set(0); /* Hide cursor. */
+
+	int no_row = height / 2, no_col = width - 4;
+	mvwprintw(dialog_win, no_row, no_col, "No");
+	int yes_row = height / 2, yes_col = 2;
+	mvwprintw(dialog_win, yes_row, yes_col, "Yes");
+
+	int ch, confirm = FALSE;
+	do
+	{
+		/* Update text highlight to display selection. */
+		mvwchgat(dialog_win, no_row, no_col, 2, confirm ? A_NORMAL : A_REVERSE, 0, NULL);
+		mvwchgat(dialog_win, yes_row, yes_col, 3, confirm ? A_REVERSE : A_NORMAL, 0, NULL);
+		wrefresh(dialog_win);
+
+		switch(ch = wgetch(dialog_win))
+		{
+		case 'y':
+			return TRUE;
+			break;
+		case 'n':
+			return FALSE;
+			break;
+		case KEY_LEFT:
+			confirm = TRUE;
+			break;
+		case KEY_RIGHT:
+			confirm = FALSE;
+			break;
+		default:
+			break;
+		}
+	}
+	while(ch != KEY_ENTER_ASCII);
+
+	del_dialog(dialog_win);
+	curs_set(1); /* Show cursor. */
+
+	return confirm;
 }
 
 ipvx_ports_t req_ipvx_ports(ipvx_t version, ipvx_protocol_t protocol)
