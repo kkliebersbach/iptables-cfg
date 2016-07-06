@@ -28,6 +28,7 @@ COMMIT\n"
 
 #define IPV4_COM_RESTORE "sh -c \"iptables-restore << cat %s\""
 #define IPV6_COM_RESTORE "sh -c \"ip6tables-restore << cat %s\""
+#define COM_NETFILTER "sh -c \"netfilter-persistent save \""
 
 typedef struct
 {

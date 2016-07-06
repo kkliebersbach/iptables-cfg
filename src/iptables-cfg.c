@@ -55,6 +55,11 @@ int main()
 		char ip6tables_restore[64];
 		sprintf(ip6tables_restore, IPV6_COM_RESTORE, IPV6_CONF);
 		system(ip6tables_restore);
+
+		if(req_confirm("Persist changes? (requires netfilter-persistent)"))
+		{
+			system(COM_NETFILTER);
+		}
 	}
 
 	endwin();
