@@ -98,6 +98,7 @@ int req_confirm(char* text)
 {
 	int height = 8, width = 32;
 	WINDOW* dialog_win = new_dialog(height, width, text);
+	getmaxyx(dialog_win, height, width); /* Update height and width. */
 	keypad(dialog_win, TRUE); /* Enable function keys. */
 	curs_set(0); /* Hide cursor. */
 
@@ -147,6 +148,7 @@ ipvx_ports_t req_ipvx_ports(ipvx_t version, ipvx_protocol_t protocol)
 			strupper(IPVX_PROTOCOLS[protocol]), version);
 	int height = 8, width = 56;
 	WINDOW* dialog_win = new_dialog(height, width, text);
+	getmaxyx(dialog_win, height, width); /* Update height and width. */
 	WINDOW* form_win = newwin(height / 2 - 1, width - 2, \
 							row / 2, col / 2 - width / 2 + 1);
 	keypad(form_win, TRUE); /* Enable function keys. */
