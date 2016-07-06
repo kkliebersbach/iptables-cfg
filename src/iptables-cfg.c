@@ -68,11 +68,13 @@ int main()
 
 WINDOW* new_dialog(int height, int width, char* text)
 {
+	int text_length = strlen(text);
+	width = (text_length > width - 2) ? text_length + 2 : width;
 	WINDOW* win = newwin(height, width, row / 2 - height / 2,\
 						col / 2 - width / 2);
 
 	box(win, 0, 0); /* Draw a box around the border of the window. */
-	mvwprintw(win, height / 2 - 1, width / 2 - strlen(text) / 2, text);
+	mvwprintw(win, height / 2 - 1, width / 2 - text_length / 2, text);
 	wrefresh(win);
 
 	return win;
