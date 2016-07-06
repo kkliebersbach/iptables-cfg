@@ -1,5 +1,6 @@
 #include <form.h>
 #include <ncurses.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -58,9 +59,13 @@ int main()
 
 		if(req_confirm("Persist changes? (requires netfilter-persistent)"))
 		{
+			/* Execute netfilter-persistent to save configuration. */
 			system(COM_NETFILTER);
 		}
 	}
+
+	remove(IPV4_CONF);
+	remove(IPV6_CONF);
 
 	endwin();
 	return 0;
