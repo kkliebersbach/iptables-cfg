@@ -1,4 +1,5 @@
 #include <form.h>
+#include <locale.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +11,8 @@ int row, col;
 
 int main()
 {
+	setlocale(LC_ALL, ""); /* Set default locale. */
+
 	initscr();
 	cbreak(); /* Disable line buffering. */
 	noecho(); /* Stop echoing characters to the screen. */
