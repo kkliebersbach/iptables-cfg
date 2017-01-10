@@ -50,7 +50,7 @@ int main()
 	fprintf(ipv6_config, IPV6_CONF_END);
 	fclose(ipv6_config);
 
-	if(req_confirm("Apply new rules?")) /* Show confirmation dialog. */
+	if (req_confirm("Apply new rules?")) /* Show confirmation dialog. */
 	{
 		/* Execute iptables-restore to apply configuration files. */
 		char iptables_restore[64];
