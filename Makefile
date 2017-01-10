@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -std=gnu11
+CFLAGS=-Wall -std=gnu11 -O2
 LDFLAGS=-lform -lncurses
 INSTALLDIR?=/usr/local/bin
 
