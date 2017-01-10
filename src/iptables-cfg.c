@@ -50,20 +50,24 @@ int main()
 	fprintf(ipv6_config, IPV6_CONF_END);
 	fclose(ipv6_config);
 
+	char com_buffer[128];
+	char iptables_restore[128], ip6tables_restore[128], netfilter[128];
+	int ret_iptables = 0, ret_ip6tables = 0, ret_netfilter = 0;
 	if (req_confirm("Apply new rules?")) /* Show confirmation dialog. */
 	{
 		/* Execute iptables-restore to apply configuration files. */
-		char iptables_restore[64];
-		sprintf(iptables_restore, IPV4_COM_RESTORE, IPV4_CONF);
-		system(iptables_restore);
-		char ip6tables_restore[64];
-		sprintf(ip6tables_restore, IPV6_COM_RESTORE, IPV6_CONF);
-		system(ip6tables_restore);
+		sprintf(com_buffer, IPV4_COM_RESTORE, IPV4_CONF);
+		sprintf(iptables_restore, COM_TEMPLATE, com_buffer);
+		ret_iptables = system(iptables_restore);
+		sprintf(com_buffer, IPV6_COM_RESTORE, IPV6_CONF);
+		sprintf(ip6tables_restore, COM_TEMPLATE, com_buffer);
+		ret_ip6tables = system(ip6tables_restore);
 
 		if(req_confirm("Persist changes? (requires netfilter-persistent)"))
 		{
 			/* Execute netfilter-persistent to save configuration. */
-			system(COM_NETFILTER);
+			sprintf(netfilter, COM_TEMPLATE, COM_NETFILTER);
+			ret_netfilter = system(netfilter);
 		}
 	}
 
@@ -71,7 +75,25 @@ int main()
 	remove(IPV6_CONF);
 
 	endwin();
+
+	if (ret_iptables != 0)
+	{
+		print_com_error(iptables_restore, ret_iptables);
+	}
+	if (ret_ip6tables != 0)
+	{
+		print_com_error(ip6tables_restore, ret_ip6tables);
+	}
+	if (ret_netfilter != 0)
+	{
+		print_com_error(netfilter, ret_netfilter);
+	}
 	return 0;
+}
+
+void print_com_error(char* com, int status)
+{
+	fprintf(stderr, "ERROR: \"%s\" exited with status code %d.\n", com, status);
 }
 
 WINDOW* new_dialog(int height, int width, char* text)

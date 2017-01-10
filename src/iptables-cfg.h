@@ -27,9 +27,10 @@ COMMIT\n"
 "-A INPUT -p ipv6-icmp -j ACCEPT\n\
 COMMIT\n"
 
-#define IPV4_COM_RESTORE "sh -c \"iptables-restore << cat %s\""
-#define IPV6_COM_RESTORE "sh -c \"ip6tables-restore << cat %s\""
-#define COM_NETFILTER "sh -c \"netfilter-persistent save \""
+#define COM_TEMPLATE "sh -c \"%s > /dev/null\" 2> /dev/null"
+#define IPV4_COM_RESTORE "iptables-restore << cat %s"
+#define IPV6_COM_RESTORE "ip6tables-restore << cat %s"
+#define COM_NETFILTER "netfilter-persistent save"
 
 typedef struct
 {
@@ -54,6 +55,7 @@ static inline char* strupper(const char* str)
 	return new_str;
 }
 
+void print_com_error(char* com, int status);
 WINDOW* new_dialog(int height, int width, char* text);
 void del_dialog(WINDOW* win);
 void append_ipvx_rule(FILE* config, long port, ipvx_protocol_t protocol);
