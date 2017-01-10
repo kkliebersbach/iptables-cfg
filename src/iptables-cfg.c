@@ -136,6 +136,11 @@ int req_confirm(char* text)
 		case KEY_RIGHT:
 			confirm = FALSE;
 			break;
+		case KEY_ESCAPE_ASCII:
+			del_dialog(dialog_win);
+			endwin();
+			exit(0);
+			break;
 		default:
 			break;
 		}
@@ -195,6 +200,12 @@ ipvx_ports_t req_ipvx_ports(ipvx_t version, ipvx_protocol_t protocol)
 		case KEY_RIGHT:
 			form_driver(form, REQ_NEXT_CHAR);
 			break;
+		/* Exit and clean up if the Escape key was pressed. */
+		case KEY_ESCAPE_ASCII:
+			free_req_ipvx_ports(form, field[0], form_win, dialog_win);
+			endwin();
+			exit(0);
+			break;
 		/* Pass the character to the form driver otherwise. */
 		default:
 			form_driver(form, ch);
@@ -224,11 +235,16 @@ ipvx_ports_t req_ipvx_ports(ipvx_t version, ipvx_protocol_t protocol)
 	}
 	free(ports_str);
 
-	unpost_form(form);
-	free_form(form);
-	free_field(field[0]);
-	delwin(form_win);
-	del_dialog(dialog_win);
+	free_req_ipvx_ports(form, field[0], form_win, dialog_win);
 
 	return ports;
+}
+
+void free_req_ipvx_ports(FORM* form, FIELD* field, WINDOW* form_win, WINDOW* dialog_win)
+{
+	unpost_form(form);
+	free_form(form);
+	free_field(field);
+	delwin(form_win);
+	del_dialog(dialog_win);
 }

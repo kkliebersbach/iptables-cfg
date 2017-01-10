@@ -5,6 +5,7 @@
 #include <ncurses.h>
 
 #define KEY_ENTER_ASCII 10 /* ASCII Enter keycode. */
+#define KEY_ESCAPE_ASCII 27 /* ASCII Escape keycode. */
 
 #define PORTS_DEFAULT_TCP "22 25 80 443"
 #define PORTS_TOK " "
@@ -58,5 +59,6 @@ void del_dialog(WINDOW* win);
 void append_ipvx_rule(FILE* config, long port, ipvx_protocol_t protocol);
 int req_confirm(char* text);
 ipvx_ports_t req_ipvx_ports(ipvx_t version, ipvx_protocol_t protocol);
+void free_req_ipvx_ports(FORM* form, FIELD* field, WINDOW* form_win, WINDOW* dialog_win);
 
 #endif
