@@ -21,7 +21,7 @@ install: build
 	cp $(ODIR)/* $(INSTALLDIR)
 
 $(BIN): $(OBJ)
-	$(CC) $(LDFLAGS) $(OBJ) -o $@
+	$(CC) $(OBJ) $(LDFLAGS) -o $@
 	rm $(OBJ)
 $(ODIR)/%.o: $(IDIR)/%.c $(DEPS)
 	$(CC) $(CFLAGS) -c $< -o $@
