@@ -20,8 +20,10 @@ clean:
 install: build
 	cp $(ODIR)/* $(INSTALLDIR)
 
-$(BIN): $(OBJ)
+$(BIN): $(ODIR) $(OBJ)
 	$(CC) $(OBJ) $(LDFLAGS) -o $@
 	rm $(OBJ)
+$(ODIR):
+	mkdir $@
 $(ODIR)/%.o: $(IDIR)/%.c $(DEPS)
 	$(CC) $(CFLAGS) -c $< -o $@
