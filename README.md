@@ -9,7 +9,7 @@ Obviously, your system must use iptables to work with this program.
     * Debian / Ubuntu: `apt install ncurses`
     * Fedora: `dnf install ncurses`
 2.  (Optional) Install netfilter-persistent to save rules across reboots
-    * Debian / Ubuntu: `apt install netfilter-persistent`
+    * Debian / Ubuntu: `apt install netfilter-persistent iptables-persistent`
     * Fedora: Coming soon...
 3.  Install iptables-cfg
     * `make install`
